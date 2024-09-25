@@ -1,0 +1,16 @@
+# UBI container with Google depot_tools
+FROM registry.access.redhat.com/ubi9/ubi:9.4
+RUN dnf install -y --nodocs git xz bzip2 && dnf clean all
+ENV \
+    DEPOT_TOOLS=/opt/depot_tools \
+    DEPOT_TOOLS_UPDATE=0 \
+    PATH=${PATH}:/opt/depot_tools
+
+# clone and run gclient to trigger cipd, which triggers download
+# of Google binaries
+RUN git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools ${DEPOT_TOOLS}
+RUN gclient >/dev/null \
+    && rm -rf ${DEPOT_TOOLS}/.cipd_bin/reclient
+
+RUN mkdir -p /work
+WORKDIR /work

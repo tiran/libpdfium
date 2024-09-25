@@ -1,0 +1,29 @@
+# exclude .git
+*/.git
+
+# exclude build directory
+pdfium*/out
+
+# exclude Debian sysroots
+pdfium*/build/linux/*sysroot
+
+# exclude build tools, we use GCC
+pdfium*/buildtools/reclient
+pdfium*/buildtools/linux64*
+pdfium*/third_party/llvm-build
+pdfium*/third_party/rust-toolchain
+pdfium*/third_party/depot_tools
+
+# exclude sources, we build with system packages
+# keep OpenJPEG2 because RHEL 9 version is too old
+# keep third_party/freetype/include/pstables.h
+pdfium*/third_party/freetype/src
+pdfium*/third_party/lcms
+pdfium*/third_party/ninja
+pdfium*/third_party/libc++
+pdfium*/third_party/libc++abi
+pdfium*/third_party/libjpeg_turbo
+pdfium*/third_party/libpng
+pdfium*/third_party/libtiff
+pdfium*/third_party/libunwind
+pdfium*/third_party/zlib

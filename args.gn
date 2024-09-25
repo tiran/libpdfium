@@ -1,0 +1,37 @@
+# force build with system GCC instead of bundled clang third-party/llvm-build
+is_clang = false
+clang_use_chrome_plugins = false
+
+# pass CFLAGS and CXXFLAGS
+custom_toolchain="//build/toolchain/linux/passflags:default"
+host_toolchain="//build/toolchain/linux/passflags:default"
+
+# release, non-embedded build
+is_debug = false
+pdf_is_standalone = true
+treat_warnings_as_errors = false
+
+# build without JavaScript engine and XFA (forms)
+pdf_enable_v8 = false
+pdf_enable_xfa = false
+
+# build without https://skia.org/ (2d graphics library)
+pdf_use_skia = false
+
+# build standard memory allocator
+pdf_use_partition_alloc = false
+
+# don't use custom sysroot
+use_sysroot = false
+
+# build with system libraries
+use_system_freetype = true
+pdf_bundle_freetype = false
+use_system_lcms2 = true
+use_system_libjpeg = true
+# needs openjpeg >= 2.5
+use_system_libopenjpeg2 = false
+use_system_libpng = true
+use_system_libtiff = true
+use_system_zlib = true
+use_custom_libcxx = false
