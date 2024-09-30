@@ -5,9 +5,16 @@
 %global commitdate 20240502
 %global shortcommit %(c=%{commit}; echo ${c:0:8})
 
+%if 0%{?fedora} || 0%{?rhel} >= 10
+%bcond_without openjpeg2
+%else
+# RHEL 9.4 has OpenJPEG2 2.4
+%bcond_with openjpeg2
+%endif
+
 Name:           libpdfium
 Version:        %{tagversion}^%{commitdate}git%{shortcommit}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Library for PDF rendering, inspection, manipulation and creation
 
 License:        Apache 2.0
@@ -36,16 +43,19 @@ BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(icu-uc)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libjpeg)
-# RHEL 9.4 has OpenJPEG2 2.4
-# BuildRequires:  pkgconfig(libopenjp2) >= 2.5
+%if %{with openjpeg2}
+BuildRequires:  pkgconfig(libopenjp2) >= 2.5
+%endif
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(zlib)
 
 # https://sourceforge.net/projects/agg/ 2.3 + security patches
 Provides:       bundled(agg) = 2.3
+%if %{without openjpeg2}
 # OpenJPEG2 2.5.0 + security fixes
 Provides:       bundled(openjpeg2) = 2.5.0
+%endif
 Provides:       bundled(abseil-cpp)
 
 
@@ -66,6 +76,11 @@ developing applications that use %{name}.
 
 # build configuration
 install -D -m=644 %{SOURCE1} out/args.gn
+%if %{with openjpeg2}
+echo "use_system_libopenjpeg2 = true" >> out/args.gn
+%else
+echo "use_system_libopenjpeg2 = false" >> out/args.gn
+%endif
 
 # custom flavor of GCC toolchain that passes CFLAGS, CXXFLAGS, etc.
 install -D -m=644 %{SOURCE2} build/toolchain/linux/passflags/BUILD.gn
@@ -101,5 +116,8 @@ cp public/*.h %{buildroot}%{_includedir}
 
 
 %changelog
+* Mon Sep 30 2024 Christian Heimes <cheimes@redhat.com> - 6462^20240502git7b7c83fb-2
+- use OpenJPEG2 on Fedora and EL10
+
 * Fri Sep 27 2024 Christian Heimes <cheimes@redhat.com> - 6462^20240502git7b7c83fb-1
 - Build tag 6462 for pypdfium2-4.30.0
